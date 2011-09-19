@@ -1,0 +1,106 @@
+<section>
+    <aside id="query-bar">
+        <h2>Data Table Form:</h2>
+        <div class="hideclosebutton">
+            <input class="btn" type="button" name="some_name" value="hide/show" id="some_name" onclick="$('#form-fields').toggle();">
+                </div>
+        
+        <div id="form-fields">
+            <form>
+                <select name="venues" id="venues">
+                    <option value="">Select a venue</option>
+                    <option value="8905708">Palace Theatre</option>
+                    <option value="8779527">HiFi Bar and Ballroom</option>
+                    <option value="8810739">Billboard The Venue</option>
+                    <option value="8779686">Forum Theatre</option>
+                    <option value="8779782">Rod Laver Arena</option>
+                    <option value="8779697">Palais Theatre</option>
+                    <option value="8831450">The Toff in Town</option>
+                </select>
+                
+                <div class="buttons">
+                    <input id="findevents" class="btn success" type="button" name="some_name" value="Find Events">
+                        </div>
+            </form>
+        </div>
+    </aside>
+    
+    <table id="dataTable" border="0" cellspacing="5" cellpadding="5" class="zebra-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+			<tr>
+				<td colspan="3">No results.</td>
+			</tr>
+        </tbody>
+    </table>
+    
+    <script type="text/javascript" charset="utf-8">
+        
+        
+		var event_fields = [
+                            'title',
+                            'startDate'
+                            ];
+        
+		$(document).ready(function(){
+            $('#findevents').click(function()
+                                 {
+                                 var selectedVenue = $('#venues').val();
+                                 
+                                 if (selectedVenue == '') 
+                                 {	
+                                 alert('Please choose a venue');
+                                 return;
+                                 };
+                                 
+                                 setEvents();
+                                 });
+
+            function setEvents()
+            {
+            var selectedVenue = $('#venues').val();
+
+            if (selectedVenue == '') 
+            {	
+            alert('Please choose a venue');
+            return;
+            };
+            
+            /* 
+             Apologies to whoever's Last.fm key I am using for this project. 
+             */
+            
+            var requestURL = "http://ws.audioscrobbler.com/2.0/?method=venue.getevents&api_key=b25b959554ed76058ac220b7b2e0a026&venue="+selectedVenue;
+
+            $('#dataTable > tbody').html();
+            $('#dataTable > tbody').append('<tr><td colspan="3">Loading...</td></tr>');
+
+            $.get(requestURL,{},function(xml){
+                $("#dataTable > tbody").html('');
+                $(xml).find("event").each(function(i) {
+                                          
+                    var tableRows = '<tr><td>'+i+'</td>';
+
+                    for (var i = 0 ; i < event_fields.length; i++){
+
+                    var field_name = event_fields[i];
+                    tableRows += "<td>" + $(this).find(field_name).text() + "</td>";
+                    };
+                    tableRows += '</tr>';
+
+                    $('#dataTable > tbody:last').append(tableRows);
+
+                    });
+                });
+            }
+            });
+        
+		</script>
+    
+</section>
